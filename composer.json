@@ -1,0 +1,5 @@
+{
+    "require": {
+        "bootpay/backend-php": "^1.0"
+    }
+}
