@@ -6,5 +6,6 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Bootpay\\ServerPhp\\' => array($vendorDir . '/bootpay/server-php/src'),
+    'Bootpay\\ServerPhp\\Test\\' => array($baseDir . '/tests'),
+    'Bootpay\\ServerPhp\\' => array($baseDir . '/src'),
 );

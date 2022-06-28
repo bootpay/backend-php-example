@@ -1,29 +1,30 @@
 {
     "packages": [
         {
-            "name": "bootpay/backend-php",
-            "version": "1.0.4",
-            "version_normalized": "1.0.4.0",
+            "name": "bootpay/server-php",
+            "version": "2.0.0",
+            "version_normalized": "2.0.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/bootpay/backend-php.git",
-                "reference": "b5f4e6ff2ed9d2cd0b9d49e162c1e9deb7ce0221"
+                "url": "https://github.com/bootpay/server-php.git",
+                "reference": "c51cbf470e96db3c7d3904e16e62f6e7d6bf93b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bootpay/backend-php/zipball/b5f4e6ff2ed9d2cd0b9d49e162c1e9deb7ce0221",
-                "reference": "b5f4e6ff2ed9d2cd0b9d49e162c1e9deb7ce0221",
+                "url": "https://api.github.com/repos/bootpay/server-php/zipball/c51cbf470e96db3c7d3904e16e62f6e7d6bf93b3",
+                "reference": "c51cbf470e96db3c7d3904e16e62f6e7d6bf93b3",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.6.0 || ^7.0"
+                "ext-json": "*",
+                "php": ">= 5.3.0"
             },
-            "time": "2021-09-13T08:54:50+00:00",
+            "time": "2022-06-23T08:39:46+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
                 "psr-4": {
-                    "Bootpay\\BackendPhp\\": "src/"
+                    "Bootpay\\ServerPhp\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -36,7 +37,7 @@
                     "email": "bootpay.co.kr@gmail.com"
                 }
             ],
-            "description": "bootpay server side php plugin",
+            "description": "bootpay server side php plugin for v2 api",
             "keywords": [
                 "BootPay",
                 "card",
@@ -45,10 +46,10 @@
                 "pg"
             ],
             "support": {
-                "issues": "https://github.com/bootpay/backend-php/issues",
-                "source": "https://github.com/bootpay/backend-php/tree/1.0.4"
+                "issues": "https://github.com/bootpay/server-php/issues",
+                "source": "https://github.com/bootpay/server-php/tree/2.0.0"
             },
-            "install-path": "../bootpay/backend-php"
+            "install-path": "../bootpay/server-php"
         }
     ],
     "dev": true,

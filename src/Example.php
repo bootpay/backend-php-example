@@ -2,136 +2,145 @@
 /*
  * Access Token 요청 예제입니다.
  */
-require_once '../vendor/autoload.php'; 
-use Bootpay\BackendPhp\BootpayApi; 
+// require_once '../vendor/autoload.php'; 
+require_once 'vendor/autoload.php'; 
+use Bootpay\ServerPhp\BootpayApi; 
 
+ 
 
-$bootpay = BootpayApi::setConfig(
+BootpayApi::setConfiguration(
     '5b8f6a4d396fa665fdc2b5ea',
     'rm6EYECr6aroQVG2ntW0A6LpWnkTgP4uQ3H18sDDUYw='
 );
+ 
 
-# 1. 토큰 발급 
-$response = $bootpay->requestAccessToken();
+//  1. (부트페이 통신을 위한) 토큰 발급
+$token = BootpayApi::getAccessToken();
 var_dump($response);
 
-
-// # 2. 결제 검증 
-$response = $bootpay->verify('612c31000199430036b5165d');
-var_dump($response);
-
-
-# 3. 결제 취소 (전액 취소 / 부분 취소)
-$response = $bootpay->cancel(
-    '613f101f0d681b0023e6e53f', 
-    null, 
-    'API 관리자',
-    'API에 의한 요청',
-    time(),
-    null,
-    [
-        'account' => '66569112432134',
-        'accountholder' => '홍길동',
-        'bankcode' => BootpayApi::BankCode['국민은행']
-    ]
-);
-var_dump($response);
-
-
-# 4. 빌링키 발급 
-$response = $bootpay->getSubscribeBillingKey(
-    'nicepay',
-    time(),
-    '30일 정기권 결제', 
-    '카드 번호',
-    '카드 비밀번호 앞에 2자리',
-    '카드 만료 연도 2자리',
-    '카드 만료 월 2자리',
-    '주민등록번호 또는 사업자번호'
-); 
-
-var_dump($response); 
-
-
-// # 4-1. 발급된 빌링키로 결제 승인 요청 
-$response = $bootpay->subscribeCardBilling(
-    '613af2600199430027b5cb83',
-    time(),
-    '정기결제 테스트 아이템',
-    1000
-);
-
-var_dump($response); 
-
-
-// # 4-2. 발급된 빌링키로 결제 예약 요청
-$response = $bootpay->subscribeCardBillingReserve(
-    '613af2600199430027b5cb83',
-    time(),
-    '정기결제 테스트 아이템',
-    1000,
-    time() + 10
-); 
-
-var_dump($response);
-
-// # 4-2-1. 발급된 빌링키로 결제 예약 - 취소 요청 
-$response = $bootpay->subscribeBillingReserveCancel(
-    '613af2600199430027b5cb83'
-); 
-
-var_dump($response);
-
-
-// # 4-3. 빌링키 삭제 
-$response = $bootpay->deleteBillingKey(
-    '613af2600199430027b5cb83'
-); 
-
-var_dump($response);
-
-
-// # 5. (부트페이 단독 - 간편결제창, 생체인증 기반의 사용자를 위한) 사용자 토큰 발급 
-$response = $bootpay->getUserToken(
-    'user1234', # 필수
-    '01012341234', # 선택
-    'rupy1014@gmail.com', # 선택
-    '홍길동', # 선택
-    1, # 선택
-    '861014' # 선택
-);
-
-var_dump($response);
-
-
-// # 6. 결제링크 생성 
-$response = $bootpay->requestPayment(
-    time(),
-    '테스트 부트페이 상품',
-    1000,
-    [
-        'pg' => 'nicepay',
-        // 'method' => 'card',
-        'methods' => ['card', 'phone', 'bank', 'vbank'],
-    ]
-); 
-var_dump($response);
-
-
-// # 7. 서버 승인 요청
-$price = 3000; // 원래 서버에서 결제하려고 했던 금액
-$receiptId = '5c6dfb1fe13f3371b38f9008';
-$result = $bootpay->verify($receiptId);
-// 서버에서 200을 받고, 원래 결제하려고 했던 금액과 일치하면 서버에 submit을 보냅니다.
-if ($result->status == 200 && $result->data->price == $price) {
-    $receiptData = $bootpay->submit($receiptId);
-    var_dump($receiptData);
+if ($token->error_code) { 
+    //토큰 발급 실패
+    return;
 }
-// 결제 완료되면 status 200을 리턴하고 실패하면 에러를 호출하며, 결제가 승인이 되지 않은 사유에 대해서 $receiptData->message로 받아보실 수 있습니다.
-// 해당 데이터는 결제완료된 시점의 JS SDK의 done함수에서 호출되어 보내는 데이터와 동일합니다.
+
+// 2. 결제 단건 조회 
+$response = BootpayApi::receiptPayment('61b009aaec81b4057e7f6ecd');
+var_dump($response);
 
 
+// 3. 결제 취소 (전액 취소 / 부분 취소)
+$response = BootpayApi::cancelPayment(
+    array(
+        'receipt_id' => '62591cfcd01c7e001c19e259',
+        'cancel_price' => 1000,
+        'cancel_tax_free' => '0',
+        'cancel_id' => null,
+        'cancel_username' => 'test',
+        'cancel_message' => '테스트 결제 취소',
+        'refund' => array(
+            'bank_account' => '',
+            'bank_username' => '',
+            'bank_code' => ''
+        )
+    )
+);
+var_dump($response);
 
-// # 8. 본인 인증 결과 검증 
-$result = $bootpay->certificate('613af2600199430027b5cb83');
-var_dump($result);
+
+// 4-1. 빌링키 발급
+$response = BootpayApi::requestSubscribeBillingKey(array(
+    'pg' => '나이스페이',
+    'order_name' => '테스트결제', 
+    'subscription_id' => time(),
+    'card_no' => '5570********1074', //카드번호 
+    'card_pw' => '**', //카드 비밀번호 2자리 
+    'card_identity_no' => '******',  //카드 소유주 생년월일 6자리 
+    'card_expire_year' => '**',  //카드 유효기간 년 2자리 
+    'card_expire_month' => '**', //카드 유효기간 월 2자리 
+    'user' => array(
+        'phone' => '01000000000',
+        'username' => '홍길동',
+        'email' => 'test@bootpay.co.kr'
+    ),
+    'reserve_execute_at' => date("Y-m-d H:i:s \U\T\C", time() + 5)
+));
+var_dump($response);
+
+// var_dump($response); 
+
+
+// 4-2. 발급된 빌링키로 결제 승인 요청 
+$response = BootpayApi::requestSubscribeCardPayment(array(
+    'billing_key' => '62b41f88cf9f6d001ad212ad',
+    'order_name' => '테스트결제',
+    'price' => 1000,
+    'order_id' => time()
+));
+var_dump($response);
+
+
+// 4-3. 발급된 빌링키로 결제 예약 요청
+$response = BootpayApi::subscribePaymentReserve(array(
+    'billing_key' => '62b41f88cf9f6d001ad212ad',
+    'order_name' => '테스트결제',
+    'price' => 1000,
+    'order_id' => time(),
+    'user' => array(
+        'phone' => '01000000000',
+        'username' => '홍길동',
+        'email' => 'test@bootpay.co.kr'
+    ),
+    'reserve_execute_at' => date("Y-m-d H:i:s \U\T\C", time() + 5)
+));
+var_dump($response); 
+
+
+// 4-4. 발급된 빌링키로 결제 예약 - 취소 요청 
+$cancel = BootpayApi::cancelSubscribeReserve($response->reserve_id);
+var_dump($cancel);
+ 
+
+
+// 4-5. 빌링키 삭제
+$response = BootpayApi::destroyBillingKey('62b41f88cf9f6d001ad212ad');
+var_dump($response); 
+ 
+
+
+// 4-6. 빌링키 조회
+$response = BootpayApi::lookupSubscribeBillingKey('62b41f68cf9f6d001ad212a5');
+var_dump($response); 
+
+
+// 5. (생체인증, 비밀번호 결제를 위한) 구매자 토큰 발급
+$response = BootpayApi::requestUserToken(array(
+    'user_id' => 'gosomi1',
+    'phone' => '01012345678'
+));
+var_dump($response);
+
+
+// 6. 서버 승인 요청
+$response = BootpayApi::confirmPayment('62b4200acf9f6d001ad212b1');
+var_dump($response);
+
+ 
+// 7. 본인 인증 결과 조회
+$response = BootpayApi::certificate('625783a6cf9f6d001d0aed19');
+var_dump($response);
+
+// 8. (에스크로 이용시) PG사로 배송정보 보내기
+$response = BootpayApi::shippingStart(
+    array(
+        'receipt_id' => "62b4200acf9f6d001ad212b1",
+        'tracking_number' => '3982983',
+        'delivery_corp' => 'CJ대한통운',
+        'user' => array(
+            'username' => '테스트',
+            'phone' => '01000000000',
+            'zipcode' => '099382',
+            'address' => '서울특별시 종로구'
+        )
+    )
+);
+var_dump($response);

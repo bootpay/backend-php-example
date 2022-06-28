@@ -1,5 +1,5 @@
 {
     "require": {
-        "bootpay/backend-php": "^1.0"
+        "bootpay/server-php": "^2.0.0"
     }
 }
