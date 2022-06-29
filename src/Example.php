@@ -96,7 +96,7 @@ var_dump($response);
 
 
 // 4-4. 발급된 빌링키로 결제 예약 - 취소 요청 
-$cancel = BootpayApi::cancelSubscribeReserve($response->reserve_id);
+$cancel = BootpayApi::cancelSubscribeReserve('62b41f88cf9f6d001ad212ad');
 var_dump($cancel);
  
 
