@@ -16,10 +16,11 @@ BootpayApi::setConfiguration(
 
 //  1. (부트페이 통신을 위한) 토큰 발급
 $token = BootpayApi::getAccessToken();
-var_dump($token);
 
-if ($token->error_code) { 
+
+if (isset($token->error_code)) { 
     //토큰 발급 실패
+    var_dump($token);
     return;
 }
 
